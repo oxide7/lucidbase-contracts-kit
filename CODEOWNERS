@@ -1,0 +1,18 @@
+# Global ownership
+* @oxide7/engineering-team
+
+# Contracts directory - requires ops team approval
+/contracts/ @oxide7/ops-team @oxide7/engineering-leads
+
+# GitHub workflows - requires ops team approval
+/.github/workflows/ @oxide7/ops-team @oxide7/engineering-leads
+
+# Version and core configuration files
+/VERSION @oxide7/ops-team @oxide7/engineering-leads
+/LICENSE @oxide7/ops-team
+
+# Drift detection and automation scripts
+/scripts/ @oxide7/ops-team @oxide7/engineering-leads
+
+# Pre-commit configuration
+/.pre-commit-config.yaml @oxide7/ops-team @oxide7/engineering-leads

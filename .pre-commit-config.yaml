@@ -1,0 +1,53 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: 'contracts/.*\.md$'
+      - id: end-of-file-fixer
+        exclude: 'contracts/.*\.md$'
+      - id: check-yaml
+      - id: check-added-large-files
+      - id: check-merge-conflict
+      - id: check-case-conflict
+
+  - repo: https://github.com/psf/black
+    rev: 23.12.1
+    hooks:
+      - id: black
+        language_version: python3
+        files: '\.py$'
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.0.0
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203]
+
+  - repo: local
+    hooks:
+      - id: contracts-hash-update
+        name: Update contract hashes
+        entry: bash -c 'if [ -f contracts/00-runtime-guard.md ]; then
+          CONTRACT_HASH=$(git hash-object contracts/00-runtime-guard.md)
+          sed -i "s/Hash:.*/Hash: $CONTRACT_HASH/" contracts/00-runtime-guard.md
+          sed -i "s/Last Updated:.*/Last Updated: $(date +%Y-%m-%d)/" contracts/00-runtime-guard.md
+          echo "Updated contract hash: $CONTRACT_HASH"
+        fi'
+        language: system
+        files: 'contracts/.*\.md$'
+        pass_filenames: false
+
+      - id: version-check
+        name: Check version consistency
+        entry: bash -c 'if [ -f VERSION ] && [ -f contracts/00-runtime-guard.md ]; then
+          VERSION_FILE=$(cat VERSION)
+          CONTRACT_VERSION=$(grep "Version:" contracts/00-runtime-guard.md | sed "s/.*Version: //")
+          if [ "$VERSION_FILE" != "$CONTRACT_VERSION" ]; then
+            echo "Version mismatch: VERSION file has $VERSION_FILE but contract has $CONTRACT_VERSION"
+            exit 1
+          fi
+          echo "Version consistency check passed: $VERSION_FILE"
+        fi'
+        language: system
+        files: '^(VERSION|contracts/.*\.md)$'
